@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <title>Title</title>
+    <style>
+        #table_rank tr>td{
+            text-align : center;
+        }
+
+        #table_rank tr>td>div{
+            text-align : center;
+            display : inline-block;
+            margin : 2px 4px;
+        }
+
+    </style>
+</head>
+<body>
+<script src="jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+
+<div class="container">
+
+    <br>
+    <div class="row">
+        <div class="col">
+            <table class="table align-middle" id="table_rank">
+                <colgroup>
+                    <col width = "20%">
+                    <col>
+                </colgroup>
+                <tbody style="border-top: 1px solid #dee2e6;">
+                <tr>
+                    <th class="table-dark">1</th>
+                    <td id = 'rank1'></td>
+                </tr>
+                <tr>
+                    <th class="table-dark">2</th>
+                    <td id = 'rank2'></td>
+                </tr>
+                <tr>
+                    <th class="table-dark">3</th>
+                    <td id = 'rank3'></td>
+                </tr>
+                </tbody>
+
+            </table>
+        </div>
+        <div class="col">
+            <table class="table table-bordered align-middle" id="table_main">
+                <colgroup>
+                    <col width="35%">
+                    <col width="20%">
+                    <col width="20%">
+                    <col width="25%">
+                </colgroup>
+                <thead class="table-dark">
+                <tr>
+                    <th>이름</th>
+                    <th>Data2</th>
+                    <th>Count</th>
+                    <th>button</th>
+                </tr>
+                </thead>
+                <tbody id="body1">
+                <tr style = "display : none;">
+                    <td contenteditable>123</td>
+                    <td contenteditable>123</td>
+                    <td class="count_number">0</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm button_increase">▲</button>
+                        <button type="button" class="btn btn-primary btn-sm button_decrease">▼</button>
+                        <button type="button" class="btn btn-danger btn-sm button_delete">X</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td contenteditable></td>
+                    <td contenteditable></td>
+                    <td class="count_number">0</td>
+                    <td>
+                        <button type="button" class="btn btn-success btn-sm button_add">+</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <br>
+            <button type="button" class="btn btn-success btn-sm" onclick = "reset();">리셋!</button>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+<script type="text/javascript">
+
+    let hero_array = [];
+    let index_count = 0;
+
+
+    $(document).on('click', '.button_increase', function () {
+        let this_tr = $(this).parent().parent();
+        let index = Number(this_tr.attr('id'));
+        let sibling = $(this).parent().siblings(".count_number");
+        sibling.text(Number(sibling.text()) + 1);
+
+        hero_array_countup(index);
+        hero_array_sort_test();
+    });
+    $(document).on('click', '.button_decrease', function () {
+        let this_tr = $(this).parent().parent();
+        let index = Number(this_tr.attr('id'));
+        let sibling = $(this).parent().siblings(".count_number");
+        let count = Number(sibling.text());
+        if (count > 0) {
+            sibling.text(count - 1);
+            hero_array_countdown(index);
+            hero_array_sort_test();
+        }
+    });
+    $(document).on('click', '.button_delete', function () {
+        let this_tr = $(this).parent().parent();
+        let index = this_tr.attr('id');
+        console.log(index);
+        this_tr.remove();
+        hero_array_delete(index);
+        hero_array_sort_test();
+    });
+
+    $(document).on('click', '.button_add', function () {
+        let $tr = $("#table_main > tbody > tr");
+        let index = $tr.length;
+
+        let $this_tr = $(this).parent().parent();
+
+        hero_array.push({id: index_count, count: 0});
+
+        let row = "<tr class = \"list_tr\"id = \"" + (index_count++) +
+            "\"><td contenteditable>" + $this_tr.children('td').eq(0).html() + "</td>" +
+            "<td contenteditable>" + $this_tr.children('td').eq(1).html() + "</td>" +
+            "<td class = \"count_number\">0</td>" +
+            "<td>" +
+            "<button type=\"button\" class=\"btn btn-primary btn-sm button_increase\">▲</button>\n" +
+            "<button type=\"button\" class=\"btn btn-primary btn-sm button_decrease\">▼</button>\n" +
+            "<button type=\"button\" class=\"btn btn-danger btn-sm button_delete\">X</button>" +
+            "</td></tr>";
+
+        $tr.eq(index - 2).after(row);
+
+        $this_tr.children('td').eq(0).html("");
+        $this_tr.children('td').eq(1).html("");
+
+    });
+
+    function arraylog(array) {
+        console.log("--start--");
+        array.forEach(function (item, index, array) {
+            console.log(item, index)
+        })
+        console.log("--fin--");
+    }
+
+    function hero_array_countup(index) {
+        hero_array[index].count++;
+    }
+
+    function hero_array_countdown(index) {
+        hero_array[index].count--;
+    }
+
+    function hero_array_delete(index) {
+        hero_array[index].count = 0;
+    }
+
+    function hero_array_sort_test()
+    {
+        let hero_array_copy = JSON.parse(JSON.stringify(hero_array));
+
+        hero_array_copy.sort(function(a,b){
+           return b.count - a.count;
+        });
+
+        rank_span_update(hero_rank_update(hero_array_copy))
+    }
+
+    function hero_rank_update(hero_rank_array)
+    {
+        let rank_count = hero_rank_array[0].count;
+        let current_rank = 0;
+        let rank_text = ["", "", ""];
+        if(rank_count == 0 || rank_count == null)
+        {
+            return;
+        }else
+        {
+            let $id_tr = $("#" + hero_rank_array[0].id);
+            rank_text[current_rank] += return_span($id_tr.children('td').eq(0).html(),$id_tr.children('td').eq(1).html());
+        }
+        for(let i = 1; i < hero_rank_array.length; i++)
+        {
+            if(rank_count == hero_rank_array[i].count)
+            {
+                let $id_tr = $("#" + hero_rank_array[i].id);
+                rank_text[current_rank] += return_span($id_tr.children('td').eq(0).html(),$id_tr.children('td').eq(1).html());
+            }else if(current_rank < 2 && hero_rank_array[i].count != 0)
+            {
+                let $id_tr = $("#" + hero_rank_array[i].id);
+                rank_count = hero_rank_array[i].count;
+                rank_text[++current_rank] = return_span($id_tr.children('td').eq(0).html(),$id_tr.children('td').eq(1).html());
+
+            }else
+            {
+                break;
+            }
+        }
+
+        return rank_text;
+    }
+    function rank_span_update(text, max_rank = 3)
+    {
+        for(let i = 1 ; i <= max_rank; i++)
+        {
+            $("#rank"+ i).html(text[i-1]);
+        }
+
+    }
+
+    function return_span(name, data2)
+    {
+        return "<div>이름 : " + name + "<br>data2 : " + data2 + "</div>";
+    }
+
+    function reset()
+    {
+        hero_array = [];
+        index_count = 0;
+
+        let $tr_to_delete = $(".list_tr");
+        $tr_to_delete.remove();
+
+        rank_span_update(["","",""]);
+    }
+
+</script>
